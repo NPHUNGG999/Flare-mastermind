@@ -1,0 +1,23 @@
+# ============================================
+# FLARE AI - Settings Configuration
+# ============================================
+
+bot:
+  name: "FLARE AI"
+  version: "1.0.0"
+  color: 0x00ffcc
+  
+features:
+  conversation_memory: true
+  code_formatting: true
+  syntax_highlighting: true
+  
+limits:
+  max_history: 20
+  max_message_length: 2000
+  
+cooldowns:
+  ask: 5
+  code: 10
+  fix: 8
+  default: 3
