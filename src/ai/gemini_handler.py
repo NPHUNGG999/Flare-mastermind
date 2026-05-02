@@ -1,6 +1,3 @@
-python3 << 'PYEOF'
-# Tạo file Python sạch, không dính lệnh bash
-code = r'''
 import asyncio
 import json
 import os
@@ -213,10 +210,3 @@ class GeminiHandler:
 
     def get_stats(self):
         return {"model": self.model_name, "total_requests": self.total_requests, "successful": self.successful_requests, "failed": self.failed_requests}
-'''
-
-with open("src/ai/gemini_handler.py", "w", encoding="utf-8") as f:
-    f.write(code.lstrip())
-
-print("✅ gemini_handler.py da duoc tao SACH (khong co echo)!")
-PYEOF
