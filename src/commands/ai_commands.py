@@ -1,4 +1,3 @@
-cat > src/commands/ai_commands.py << 'EOF'
 import discord
 from discord.ext import commands
 from ..utils.config import config
@@ -276,6 +275,3 @@ class AICommands(commands.Cog):
 async def setup(bot: commands.Bot):
     await bot.add_cog(AICommands(bot))
     log.info("✅ AI Commands FULL loaded!")
-EOF
-
-echo "✅ ai_commands.py FULL đã được tạo!"
