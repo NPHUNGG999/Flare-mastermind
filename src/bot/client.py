@@ -1,4 +1,3 @@
-cat > src/bot/client.py << 'ENDOFFILE'
 import discord
 from discord.ext import commands
 from typing import Optional
@@ -59,6 +58,3 @@ class FlareBot(commands.Bot):
         if not config.validate():
             raise ValueError("Configuration invalid! Check .env file")
         super().run(config.discord.token, log_handler=None)
-ENDOFFILE
-
-echo "✅ client.py fixed!"
