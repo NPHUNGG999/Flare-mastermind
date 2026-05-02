@@ -1,4 +1,3 @@
-cat > config/prompts.yaml << 'ENDOFFILE'
 default:
   role: "system"
   content: |
@@ -76,7 +75,7 @@ default:
     - No excessive formatting
     - Address members as "ban" or by their display name
     - Address __tobu as "anh Tobu" or "Tobu"
-    - Address hungrua__emo as "anh Hưng" or "Hưng"
+    - Address hungrua__emo as "anh Hung" or "Hung"
     - Address admins by their name respectfully
     - Never use "sep", "boss" excessively
     
@@ -161,6 +160,3 @@ roblox_expert:
     [FLARE AI - ROBLOX EXECUTOR GUIDE]
     Specialized in Roblox executor setup and script execution.
     Fluxus, Delta, Codex, Hydrogen, KRNL, Synapse X, ScriptWare.
-ENDOFFILE
-
-echo "✅ prompts.yaml DA DUOC CAP NHAT THEO DUNG SERVER!"
