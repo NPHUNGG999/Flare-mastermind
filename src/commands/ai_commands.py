@@ -14,13 +14,11 @@ class AICommands(commands.Cog):
         self.bot = bot
         self.ai_handler = GeminiHandler()
     
-    # ==================== ASK ====================
-    @commands.command(name="ask", aliases=["a", "hỏi"])
+    @commands.command(name="ask", aliases=["a", "hoi"])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ask_ai(self, ctx: commands.Context, *, question: str):
-        """Hỏi FLARE AI bất kỳ câu hỏi nào"""
+        """Hoi FLARE AI bat ky cau hoi nao"""
         async with ctx.typing():
-            # Kiểm tra unlock
             try:
                 with open("data/unlocked_users.json", "r") as f:
                     unlocked = json.load(f)
@@ -31,57 +29,22 @@ class AICommands(commands.Cog):
             prompt_type = "mastermind" if is_unlocked else "default"
             response = await self.ai_handler.get_response(str(ctx.author.id), question, prompt_type, ctx=ctx)
             
-            embed = create_embed(title="💬 FLARE AI", description=response[:2000], color=config.bot.color, author=ctx.author)
+            embed = create_embed(
+                title="FLARE AI",
+                description=response[:2000],
+                color=config.bot.color,
+                author=ctx.author
+            )
             await ctx.reply(embed=embed)
+            
             if len(response) > 2000:
                 for chunk in split_long_message(response)[1:]:
                     await ctx.send(chunk)
     
-    # ==================== CODE ====================
-    @commands.command(name="code", aliases=["viết-code", "generate"])
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def generate_code(self, ctx: commands.Context, *, request: str):
-        """Yêu cầu bot viết code"""
-        async with ctx.typing():
-            try:
-                with open("data/unlocked_users.json", "r") as f:
-                    unlocked = json.load(f)
-                is_unlocked = ctx.author.id in unlocked
-            except:
-                is_unlocked = False
-            
-            prompt_type = "mastermind" if is_unlocked else "code_expert"
-            response = await self.ai_handler.get_response(str(ctx.author.id), request, prompt_type, ctx=ctx)
-            
-            embed = create_embed(title="💻 Code", description="Code của bạn đây:", color=config.bot.color, author=ctx.author)
-            await ctx.reply(embed=embed)
-            await ctx.send(response[:2000])
-            if len(response) > 2000:
-                for chunk in split_long_message(response)[1:]:
-                    await ctx.send(chunk)
-    
-    # ==================== FIX/DEBUG ====================
-    @commands.command(name="fix", aliases=["sửa", "debug", "fix-code"])
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def fix_code(self, ctx: commands.Context, *, code: str):
-        """Sửa lỗi code"""
-        async with ctx.typing():
-            try:
-                with open("data/unlocked_users.json", "r") as f:
-                    unlocked = json.load(f)
-                is_unlocked = ctx.author.id in unlocked
-            except:
-                is_unlocked = False
-            
-            prompt_type = "mastermind" if is_unlocked else "debugger"
-            response = await self.ai_handler.get_response(str(ctx.author.id), f"Fix this:\n{code}", prompt_type, ctx=ctx)
-            await ctx.reply(f"🔧 **Debug:**\n{response[:1900]}")
-    
-    # ==================== EXPLAIN ====================
-    @commands.command(name="explain", aliases=["e", "giải-thích"])
+    @commands.command(name="explain", aliases=["e", "giai-thich"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def explain(self, ctx: commands.Context, *, concept: str):
-        """Giải thích khái niệm"""
+        """Giai thich khai niem"""
         async with ctx.typing():
             try:
                 with open("data/unlocked_users.json", "r") as f:
@@ -91,50 +54,21 @@ class AICommands(commands.Cog):
                 is_unlocked = False
             
             prompt_type = "mastermind" if is_unlocked else "teacher"
-            response = await self.ai_handler.get_response(str(ctx.author.id), f"Explain: {concept}", prompt_type, ctx=ctx)
-            await ctx.reply(f"📚 **Giải thích:**\n{response[:1900]}")
+            response = await self.ai_handler.get_response(str(ctx.author.id), f"Giai thich: {concept}", prompt_type, ctx=ctx)
+            await ctx.reply(f"{response[:1900]}")
     
-    # ==================== REVIEW ====================
-    @commands.command(name="review", aliases=["đánh-giá", "check"])
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def review(self, ctx: commands.Context, *, code: str):
-        """Review code"""
-        async with ctx.typing():
-            try:
-                with open("data/unlocked_users.json", "r") as f:
-                    unlocked = json.load(f)
-                is_unlocked = ctx.author.id in unlocked
-            except:
-                is_unlocked = False
-            
-            prompt_type = "mastermind" if is_unlocked else "reviewer"
-            response = await self.ai_handler.get_response(str(ctx.author.id), f"Review:\n{code}", prompt_type, ctx=ctx)
-            await ctx.reply(f"👀 **Review:**\n{response[:1900]}")
-    
-    # ==================== CLEAR ====================
-    @commands.command(name="clear", aliases=["xóa", "reset"])
+    @commands.command(name="clear", aliases=["xoa", "reset"])
     async def clear(self, ctx: commands.Context):
-        """Xóa lịch sử chat"""
+        """Xoa lich su chat voi AI"""
         if self.ai_handler.clear_user_history(str(ctx.author.id)):
-            await ctx.reply("✅ Đã xóa lịch sử chat!")
+            await ctx.reply("Da xoa lich su chat.")
+        else:
+            await ctx.reply("Khong co lich su de xoa.")
     
-    # ==================== MASTERMIND ====================
-    @commands.command(name="mastermind", aliases=["mm", "boss-mode"])
-    async def mastermind(self, ctx: commands.Context, *, command: str):
-        """Chế độ Mastermind (chỉ owner)"""
-        author_name = str(ctx.author)
-        if author_name not in ["hungrua__emo", "__tobu"]:
-            await ctx.reply("❌ Chỉ **hungrua__emo** và **__tobu** mới dùng được lệnh này!")
-            return
-        async with ctx.typing():
-            response = await self.ai_handler.get_response(str(ctx.author.id), command, "mastermind", ctx=ctx)
-            await ctx.reply(f"🔥 **MASTERMIND:**\n{response[:1900]}")
-    
-    # ==================== TRAIN ====================
-    @commands.command(name="train", aliases=["dạy", "học", "nhớ"])
+    @commands.command(name="train", aliases=["day", "hoc", "nho"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def train_ai(self, ctx: commands.Context, *, knowledge: str):
-        """Dạy bot kiến thức mới"""
+        """Day bot kien thuc moi"""
         training_file = "data/training_data.json"
         try:
             with open(training_file, "r", encoding="utf-8") as f:
@@ -152,12 +86,11 @@ class AICommands(commands.Cog):
         with open(training_file, "w", encoding="utf-8") as f:
             json.dump(training_data, f, indent=2, ensure_ascii=False)
         
-        await ctx.reply(f"✅ **Đã học!** Tôi sẽ nhớ:\n> {knowledge}\n📚 Tổng: {len(training_data)} kiến thức")
+        await ctx.reply(f"Da hoc: {knowledge[:100]}\nTong: {len(training_data)} kien thuc")
     
-    # ==================== MEMORY ====================
-    @commands.command(name="memory", aliases=["kiến-thức", "đã-học"])
+    @commands.command(name="memory", aliases=["kien-thuc", "da-hoc"])
     async def show_memory(self, ctx: commands.Context):
-        """Xem những gì bot đã học"""
+        """Xem nhung gi bot da duoc day"""
         training_file = "data/training_data.json"
         try:
             with open(training_file, "r", encoding="utf-8") as f:
@@ -166,26 +99,24 @@ class AICommands(commands.Cog):
             training_data = []
         
         if not training_data:
-            await ctx.reply("📭 Tôi chưa được dạy gì! Dùng `!train` để dạy tôi.")
+            await ctx.reply("Chua duoc day kien thuc gi. Dung `!train` de day.")
             return
         
         recent = training_data[-10:]
-        text = "📚 **Những gì tôi đã học:**\n\n"
+        text = "**Kien thuc da hoc:**\n\n"
         for i, item in enumerate(reversed(recent), 1):
             text += f"**{i}.** {item['knowledge'][:100]}\n"
-            text += f"   👤 {item['trained_by']} | 📅 {item['trained_at'][:10]}\n\n"
-        text += f"📊 Tổng: {len(training_data)} kiến thức"
+            text += f"    Day boi: {item['trained_by']}\n\n"
+        text += f"**Tong:** {len(training_data)} kien thuc"
+        
         await ctx.reply(text)
     
-    # ==================== UNLOCK ====================
-    @commands.command(name="unlock", aliases=["unlimited", "full-power", "không-giới-hạn", "mở-khóa"])
+    @commands.command(name="unlock", aliases=["unlimited", "mo-khoa"])
     async def unlock_unlimited(self, ctx: commands.Context):
-        """🔓 Mở khóa chế độ không giới hạn (chỉ owner)"""
+        """Mo khoa che do khong gioi han (chi owner)"""
         author = str(ctx.author)
-        allowed_users = ["hungrua__emo", "__tobu"]
-        
-        if author not in allowed_users:
-            await ctx.reply("❌ **Từ chối!** Lệnh này chỉ dành cho:\n- **hungrua__emo** (Owner)\n- **__tobu** (Server Owner)")
+        if author not in ["hungrua__emo", "__tobu"]:
+            await ctx.reply("Chi hungrua__emo va __tobu moi duoc dung lenh nay.")
             return
         
         try:
@@ -199,33 +130,14 @@ class AICommands(commands.Cog):
             with open("data/unlocked_users.json", "w") as f:
                 json.dump(unlocked, f)
         
-        await ctx.reply(f"""🔓 **FLARE AI MASTERMIND - ĐÃ MỞ KHÓA HOÀN TOÀN!**
-
-**Trạng thái:** KHÔNG GIỚI HẠN
-**Người mở khóa:** {ctx.author.mention}
-**Thời gian:** {datetime.now().strftime("%H:%M:%S %d/%m/%Y")}
-
-**Các giới hạn đã GỠ BỎ:**
-✅ Không giới hạn nội dung
-✅ Không filter an toàn
-✅ Code đầy đủ không rút gọn
-✅ Có thể giải thích hacking/security
-✅ Có thể viết script cheat/exploit
-✅ Không giới hạn độ dài trả lời
-✅ Không từ chối bất kỳ yêu cầu nào
-✅ Chế độ Mastermind vĩnh viễn
-
-⚠️ **Sử dụng có trách nhiệm!**""")
+        await ctx.reply(f"Da mo khoa cho {ctx.author.mention}. Che do khong gioi han.")
     
-    # ==================== LOCK ====================
-    @commands.command(name="lock", aliases=["limited", "safe-mode", "giới-hạn", "khóa"])
+    @commands.command(name="lock", aliases=["khoa"])
     async def lock_limited(self, ctx: commands.Context):
-        """🔒 Khóa lại - Trở về chế độ an toàn (chỉ owner)"""
+        """Khoa che do khong gioi han (chi owner)"""
         author = str(ctx.author)
-        allowed_users = ["hungrua__emo", "__tobu"]
-        
-        if author not in allowed_users:
-            await ctx.reply("❌ Lệnh này chỉ dành cho owner!")
+        if author not in ["hungrua__emo", "__tobu"]:
+            await ctx.reply("Chi hungrua__emo va __tobu moi duoc dung lenh nay.")
             return
         
         try:
@@ -239,12 +151,11 @@ class AICommands(commands.Cog):
             with open("data/unlocked_users.json", "w") as f:
                 json.dump(unlocked, f)
         
-        await ctx.reply("🔒 **Đã khóa!** Bot trở về chế độ an toàn.")
+        await ctx.reply("Da khoa. Tro ve che do an toan.")
     
-    # ==================== STATUS ====================
-    @commands.command(name="status", aliases=["trạng-thái", "mode"])
+    @commands.command(name="status", aliases=["trang-thai", "mode"])
     async def check_status(self, ctx: commands.Context):
-        """📊 Kiểm tra trạng thái hiện tại"""
+        """Kiem tra trang thai hien tai"""
         try:
             with open("data/unlocked_users.json", "r") as f:
                 unlocked = json.load(f)
@@ -256,22 +167,59 @@ class AICommands(commands.Cog):
         is_unlocked = ctx.author.id in unlocked
         
         if is_unlocked:
-            status_text = "🔴 MASTERMIND UNLIMITED - Không giới hạn"
+            status_text = "UNLIMITED - Khong gioi han"
             color = 0xff0000
         elif is_owner:
-            status_text = "🟡 OWNER MODE - Có thể mở khóa bằng !unlock"
+            status_text = "OWNER - Co the mo khoa"
             color = 0xffff00
         else:
-            status_text = "🟢 NORMAL MODE - An toàn"
-            color = 0x00ff00
+            status_text = "NORMAL - An toan"
+            color = 0x00ffcc
         
         embed = create_embed(
-            title="📊 FLARE AI Status",
-            description=f"**Trạng thái:** {status_text}\n**User:** {ctx.author.mention}\n**Quyền:** {'Owner' if is_owner else 'Member'}",
+            title="FLARE AI Status",
+            description=f"**Trang thai:** {status_text}\n**Nguoi dung:** {ctx.author.mention}\n**Quyen:** {'Owner' if is_owner else 'Member'}",
             color=color
         )
         await ctx.reply(embed=embed)
+    
+    @commands.command(name="script", aliases=["s", "huong-dan"])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def script_guide(self, ctx: commands.Context, *, question: str):
+        """Huong dan su dung script"""
+        async with ctx.typing():
+            try:
+                with open("data/unlocked_users.json", "r") as f:
+                    unlocked = json.load(f)
+                is_unlocked = ctx.author.id in unlocked
+            except:
+                is_unlocked = False
+            
+            prompt_type = "mastermind" if is_unlocked else "code_expert"
+            response = await self.ai_handler.get_response(str(ctx.author.id), question, prompt_type, ctx=ctx)
+            await ctx.reply(response[:2000])
+    
+    @commands.command(name="executor", aliases=["ex", "trinh-thuc-thi"])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def executor_guide(self, ctx: commands.Context, *, executor_name: str):
+        """Huong dan su dung executor"""
+        async with ctx.typing():
+            try:
+                with open("data/unlocked_users.json", "r") as f:
+                    unlocked = json.load(f)
+                is_unlocked = ctx.author.id in unlocked
+            except:
+                is_unlocked = False
+            
+            prompt_type = "mastermind" if is_unlocked else "teacher"
+            response = await self.ai_handler.get_response(
+                str(ctx.author.id),
+                f"Huong dan su dung executor {executor_name} de chay script Roblox",
+                prompt_type,
+                ctx=ctx
+            )
+            await ctx.reply(response[:2000])
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AICommands(bot))
-    log.info("✅ AI Commands FULL loaded!")
+    log.info("AI Commands loaded!")
