@@ -1,4 +1,3 @@
-cat > src/bot/events.py << 'ENDOFFILE'
 import discord
 from discord.ext import commands
 import json
@@ -74,6 +73,3 @@ async def handle_mention_message(bot, message):
                 await message.reply(chunk)
         else:
             await message.reply(response)
-ENDOFFILE
-
-echo "✅ events.py fixed!"
