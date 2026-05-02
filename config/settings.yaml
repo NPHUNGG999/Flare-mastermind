@@ -1,23 +1,27 @@
-# ============================================
-# FLARE AI - Settings Configuration
-# ============================================
-
 bot:
   name: "FLARE AI"
-  version: "1.0.0"
+  version: "2.0.0 Mastermind"
   color: 0x00ffcc
-  
+  owner: "hungrua__emo"
+  server_owner: "__tobu"
+  server: "Flare Studios"
+
 features:
-  conversation_memory: true
-  code_formatting: true
-  syntax_highlighting: true
+  auto_learn: true
+  context_awareness: true
+  role_detection: true
+  server_monitoring: true
+  unlimited_mode: true
+
+mastermind:
+  enabled: true
+  owners: ["hungrua__emo", "__tobu"]
+  admin_roles: ["Admin", "FLare SuPPort"]
+  
+learning:
+  from_chat: true
+  auto_memory: true
   
 limits:
-  max_history: 20
-  max_message_length: 2000
-  
-cooldowns:
-  ask: 5
-  code: 10
-  fix: 8
-  default: 3
+  max_history: 50
+  max_output: 4000
